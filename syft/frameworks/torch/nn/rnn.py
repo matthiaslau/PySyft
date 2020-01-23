@@ -202,6 +202,19 @@ class RNNBase(nn.Module):
                         base_cell(hidden_size, hidden_size, bias, nonlinearity)
                     )
 
+    def check_input(self, input, batch_sizes):
+        expected_input_dim = 2 if batch_sizes is not None else 3
+        if input.dim() != expected_input_dim:
+            raise RuntimeError(
+                "input must have {} dimensions, got {}".format(expected_input_dim, input.dim())
+            )
+        if self.input_size != input.shape[-1]:
+            raise RuntimeError(
+                "input.shape(-1) must be equal to input_size. Expected {}, got {}".format(
+                    self.input_size, input.shape[-1]
+                )
+            )
+
     def forward(self, x, h=None):
         # If batch_first == True, swap axis with seq_len
         # At the end of the process we swap it back to the original structure
